@@ -8,11 +8,12 @@ def get_serial_number(type=hex):
     @micropython.asm_thumb
     def reg_read(r0):
         ldr(r0, [r0, 0])
-    return type(reg_read(NRF_FICR_BASE + (DEVICEID_INDEX*4)))
+    n = reg_read(NRF_FICR_BASE + (DEVICEID_INDEX*4))
+    return type(n if n > 0 else n & (2**32-1))
 
 radio.on()
 
-ID = get_serial_number()
+ID = get_serial_number()[2:]
 
 # all times in milliseconds
 DELAY_BETWEEN_BROADCASTS = 10*1000
@@ -21,7 +22,7 @@ TIMEOUT = 30 * 1000  # max time that we can not have a ping from a device while 
 TIME_BETWEEN_DATA_SAVES = 1 * 60 * 1000  # save data file this often
 
 RSSI_THRESHOLD = -60
-DATA_FILENAME = "data.csv"
+DATA_FILENAME = ID + ".csv"
 INFECTED_FILENAME = "infected"
 
 contacts = {}
@@ -86,11 +87,11 @@ while True:
     #save data to file
     if close_contacts and last_data_save + TIME_BETWEEN_DATA_SAVES < time.ticks_ms():
         f=open(DATA_FILENAME, "w")
-        f.write("ID,First Contact (min),Total Contact Time (min)\n")
+        f.write("Receiver,Sender1,First Contact (min),Total Contact Time (min)\n")
         for contactID, contact in close_contacts.items():
             user_id, first_timestamp = contactID.split(":")
             contact_time = contact[0] - int(first_timestamp)
-            line = user_id + "," + first_timestamp + "," + str(contact_time)
+            line = ID + "," + user_id + "," + first_timestamp + "," + str(contact_time)
             if infected:
                 line += ",1"
             f.write(line + "\n")
