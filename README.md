@@ -7,4 +7,6 @@ Each micro:bit will periodically send a message containing its ID (serial number
 
 The contact_infections.py variant has an 'infected' flag. If your micro:bit is in prolonged contact with an infected micro:bit, it too will get infected. This is logged in an extra field in the data file, as well as the presence of an empty file 'infected' on the microbit itself.
 
-Coming soon - easy tool to download data via web browser; probabilistic infections.
+To download the data off the micro:bit, you can use the [Mu editor's](https://codewith.mu/) file-browser function, or this [web-browser based file download built for this very purpose](https://eduvik.github.io/microbit-webusb/)
+
+Coming soon - probabilistic infections.
