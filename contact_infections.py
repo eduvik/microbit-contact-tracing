@@ -1,6 +1,7 @@
 from microbit import *
 import radio
 import time
+import os
 
 def get_serial_number(type=hex):
     NRF_FICR_BASE = 0x10000000
@@ -22,8 +23,20 @@ TIMEOUT = 30 * 1000  # max time that we can not have a ping from a device while 
 TIME_BETWEEN_DATA_SAVES = 1 * 60 * 1000  # save data file this often
 
 RSSI_THRESHOLD = -60
-DATA_FILENAME = ID + ".csv"
+
 INFECTED_FILENAME = "infected"
+
+DATA_FILENAME = ID + "-1.csv"
+# check if data file exists; create new name to prevent overwriting
+i = 2
+while True:
+    try:
+        f = open(DATA_FILENAME)
+        f.close()
+        DATA_FILENAME = ID + "-" + str(i) + ".csv"
+        i += 1
+    except:
+        break  # file doesn't exist, so filename is safe to use
 
 contacts = {}
 close_contacts = {}
@@ -42,15 +55,14 @@ while True:
     if button_a.is_pressed() and button_b.is_pressed():
         for i in range(50):
             print()
-        try:
-            f=open(DATA_FILENAME)
-            while True:
-                l = f.readline()
-                if not l:
-                    break
-                print(l, end='')
-        except OSError:
-            print("No contact data")
+        for filename in os.listdir():
+            if filename[-4:] == ".csv":
+                f = open(filename)
+                while True:
+                    l = f.readline()
+                    if not l:
+                        break
+                    print(l, end='')
 
     #check for received messages and process
     d = radio.receive_full()
@@ -90,7 +102,7 @@ while True:
     #save data to file
     if close_contacts and last_data_save + TIME_BETWEEN_DATA_SAVES < time.ticks_ms():
         f=open(DATA_FILENAME, "w")
-        f.write("Receiver,Sender1,First Contact (min),Total Contact Time (min)\n")
+        f.write("Receiver,Sender,First Contact (min),Total Contact Time (min)\n")
         for contactID, contact in close_contacts.items():
             user_id, first_timestamp = contactID.split(":")
             contact_time = contact[0] - int(first_timestamp)
