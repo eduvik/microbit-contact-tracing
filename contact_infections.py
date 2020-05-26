@@ -66,11 +66,11 @@ while True:
         if rssi > RSSI_THRESHOLD:
             if received_id in contacts:
                 if contacts[received_id][1] + TIMEOUT < timestamp:  # previous contact timed out; start again
-                    contacts[received_id] = (timestamp, timestamp), # (first contact, last timestamp)
+                    contacts[received_id] = (timestamp, timestamp) # (first contact, last timestamp)
                 else:
                     contacts[received_id] = (contacts[received_id][0], timestamp)  # update last timestamp
             else:
-                contacts[received_id] = (timestamp, timestamp), # (first contact, last timestamp)
+                contacts[received_id] = (timestamp, timestamp) # (first contact, last timestamp)
 
             if contacts[received_id][1] - contacts[received_id][0] > CLOSE_CONTACT_TIME:
                 # record close contact
