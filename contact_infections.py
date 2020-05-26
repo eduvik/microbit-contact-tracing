@@ -42,12 +42,15 @@ while True:
     if button_a.is_pressed() and button_b.is_pressed():
         for i in range(50):
             print()
-        f=open(DATA_FILENAME)
-        while True:
-            l = f.readline()
-            if not l:
-                break
-            print(l, end='')
+        try:
+            f=open(DATA_FILENAME)
+            while True:
+                l = f.readline()
+                if not l:
+                    break
+                print(l, end='')
+        except OSError:
+            print("No contact data")
 
     #check for received messages and process
     d = radio.receive_full()
@@ -62,17 +65,17 @@ while True:
             received_id = received_id[:-1] # trim infected marker
         if rssi > RSSI_THRESHOLD:
             if received_id in contacts:
-                if contacts[received_id]['last_timestamp'] + TIMEOUT < timestamp:  # previous contact timed out; start again
-                    contacts[received_id] = {'first_contact': timestamp, 'last_timestamp': timestamp}
+                if contacts[received_id][1] + TIMEOUT < timestamp:  # previous contact timed out; start again
+                    contacts[received_id] = (timestamp, timestamp), # (first contact, last timestamp)
                 else:
-                    contacts[received_id]['last_timestamp'] = timestamp  # update last timestamp
+                    contacts[received_id] = (contacts[received_id][0], timestamp)  # update last timestamp
             else:
-                contacts[received_id] = {'first_contact': timestamp, 'last_timestamp': timestamp}
+                contacts[received_id] = (timestamp, timestamp), # (first contact, last timestamp)
 
-            if contacts[received_id]['last_timestamp'] - contacts[received_id]['first_contact'] > CLOSE_CONTACT_TIME:
+            if contacts[received_id][1] - contacts[received_id][0] > CLOSE_CONTACT_TIME:
                 # record close contact
-                contactID = received_id + ":" + str(contacts[received_id]['first_contact']//60000)
-                close_contacts[contactID] = (contacts[received_id]['last_timestamp']//60000, received_infected)
+                contactID = received_id + ":" + str(contacts[received_id][0]//60000) # "SERIAL:first_timestamp"
+                close_contacts[contactID] = (contacts[received_id][1]//60000, received_infected) # (last timestamp, infected)
                 if not infected and received_infected:
                     infected = 1
                     open(INFECTED_FILENAME, "w").close()
@@ -92,7 +95,7 @@ while True:
             user_id, first_timestamp = contactID.split(":")
             contact_time = contact[0] - int(first_timestamp)
             line = ID + "," + user_id + "," + first_timestamp + "," + str(contact_time)
-            if infected:
+            if contact[1]:  # infected
                 line += ",1"
             f.write(line + "\n")
         f.close()
