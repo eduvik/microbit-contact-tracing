@@ -17,10 +17,10 @@ radio.on()
 ID = get_serial_number()[2:]
 
 # all times in milliseconds
-DELAY_BETWEEN_BROADCASTS = 10*1000
-CLOSE_CONTACT_TIME = 1*60*1000
+DELAY_BETWEEN_BROADCASTS = 10 * 1000
+CLOSE_CONTACT_TIME = 5 * 60 * 1000
 TIMEOUT = 30 * 1000  # max time that we can not have a ping from a device while still considering it to be in close contact
-TIME_BETWEEN_DATA_SAVES = 1 * 60 * 1000  # save data file this often
+TIME_BETWEEN_DATA_SAVES = 5 * 60 * 1000  # save data file this often
 
 RSSI_THRESHOLD = -60
 
@@ -58,11 +58,13 @@ while True:
         for filename in os.listdir():
             if filename[-4:] == ".csv":
                 f = open(filename)
+                print("-----START:" + filename)
+                print("Receiver,Sender,First Contact (min),Total Contact Time (min)")  #write header here to save disk space
                 while True:
                     l = f.readline()
                     if not l:
                         break
-                    print(l, end='')
+                    print(ID + "," + l, end='')
 
     #check for received messages and process
     d = radio.receive_full()
@@ -102,11 +104,10 @@ while True:
     #save data to file
     if close_contacts and last_data_save + TIME_BETWEEN_DATA_SAVES < time.ticks_ms():
         f=open(DATA_FILENAME, "w")
-        f.write("Receiver,Sender,First Contact (min),Total Contact Time (min)\n")
         for contactID, contact in close_contacts.items():
             user_id, first_timestamp = contactID.split(":")
             contact_time = contact[0] - int(first_timestamp)
-            line = ID + "," + user_id + "," + first_timestamp + "," + str(contact_time)
+            line = user_id + "," + first_timestamp + "," + str(contact_time)
             if contact[1]:  # infected
                 line += ",1"
             f.write(line + "\n")
