@@ -59,7 +59,7 @@ while True:
                 print("-----START:" + filename)
                 print("Receiver,Sender,First Contact (min),Total Contact Time (min)")  #write header here to save disk space
                 while True:
-                    sleep(10)  # prevent serial overruns
+                    sleep(50)  # prevent serial overruns
                     l = f.readline()
                     if not l:
                         break

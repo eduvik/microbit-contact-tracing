@@ -9,4 +9,3 @@ The contact_infections.py variant has an 'infected' flag. If your micro:bit is i
 
 To download the data off the micro:bit, you can use the [Mu editor's](https://codewith.mu/) file-browser function, or this [web-browser based file download built for this very purpose](https://eduvik.github.io/microbit-webusb/)
 
-Coming soon - probabilistic infections.
