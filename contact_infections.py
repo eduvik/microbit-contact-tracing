@@ -59,10 +59,11 @@ while True:
                 print("-----START:" + filename)
                 print("Receiver,Sender,First Contact (min),Total Contact Time (min)")  #write header here to save disk space
                 while True:
+                    sleep(10)  # prevent serial overruns
                     l = f.readline()
                     if not l:
                         break
-                    print(ID + "," + l, end='')
+                    print("x" + ID + ",x" + l, end='')  #adding x to every ID number so spreadsheets don't try to interpret as number/scientific notation
 
     #check for received messages and process
     d = radio.receive_full()
