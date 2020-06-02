@@ -10,7 +10,7 @@ CLOSE_CONTACT_TIME = 5 * 60 * 1000
 TIMEOUT = 30 * 1000  # max time that we can not have a ping from a device while still considering it to be in close contact
 TIME_BETWEEN_DATA_SAVES = 5 * 60 * 1000  # save data file this often
 
-RSSI_THRESHOLD = -60
+RSSI_THRESHOLD = -70
 
 INFECTED_FILENAME = "infected"
 
