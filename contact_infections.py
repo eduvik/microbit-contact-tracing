@@ -51,6 +51,7 @@ radio.on()
 while True:
     #if both buttons are pressed, dump data to serial port.
     if button_a.is_pressed() and button_b.is_pressed():
+        display.show((Image.ARROW_N, Image("00000:"*5)), delay=100, wait=False, loop=True)
         for i in range(50):
             print()
         for filename in os.listdir():
@@ -64,6 +65,7 @@ while True:
                     if not l:
                         break
                     print("x" + ID + ",x" + l, end='')  #adding x to every ID number so spreadsheets don't try to interpret as number/scientific notation
+        display.clear()
 
     #check for received messages and process
     d = radio.receive_full()
