@@ -26,7 +26,7 @@ while True:
     try:
         f = open(DATA_FILENAME)
         f.close()
-        DATA_FILENAME = ID + "-" + str(i) + ".csv"
+        DATA_FILENAME = hex2str(ID) + "-" + str(i) + ".csv"
         i += 1
     except:
         break  # file doesn't exist, so filename is safe to use
@@ -55,7 +55,7 @@ while True:
             if filename[-4:] == ".csv":
                 f = open(filename, "rb")
                 print("-----START:" + filename)
-                print("Receiver,Sender,First Contact Time(min),Last Contact Time (min)")  #write header here to save disk space
+                print("Receiver,Sender,First Contact Time (min),Last Contact Time (min)")  #write header here to save disk space
                 while True:
                     sleep(50)  # prevent serial overruns
                     l = f.readline()
@@ -65,8 +65,7 @@ while True:
                           ",x" + hex2str(l[0:4]) +
                           "," + str(int.from_bytes(l[4:6], "big")) +
                           "," + str(int.from_bytes(l[6:8], "big")) +
-                          (",!" if l[8] == "!" else ""),
-                          end='')
+                          (",!" if (len(l) >= 9 and l[8] == "!") else ""))
         display.clear()
 
     #check for received messages and process
